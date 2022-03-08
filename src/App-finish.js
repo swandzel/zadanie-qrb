@@ -1,9 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import Logo from "../src/logo.svg";
 
 function App() {
   const [users, setUsers] = useState([]);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    fetch(`https://jsonplaceholder.typicode.com/users?username=${query}`)
+      .then((response) => response.json())
+      .then((json) => setUsers(json));
+  }, [query]);
+
+  const handleQuery = (e) => {
+    setQuery(e.target.value);
+  };
 
   return (
     <div className="App">
@@ -31,13 +42,15 @@ function App() {
       </header>
       <form>
         <label htmlFor="search">Search user</label>
-        <input type="search" id="search" />
+        <input type="search" id="search" onChange={handleQuery} />
       </form>
-      {/* Każdy wyszukany użytkownik ma wyświetlać imię i adres. */}
       {users.map((user) => (
-        <div className="user-found">
-          <p className="user-found__name">NAME</p>
-          <p className="user-found__address">STREET SUITE, ZIPCODE CITY</p>
+        <div className="user-found" key={user.id}>
+          <p className="user-found__name">{user.name}</p>
+          <p className="user-found__address">
+            {user.address.street} {user.address.suite}, {user.address.zipcode}{" "}
+            {user.address.city}
+          </p>
         </div>
       ))}
     </div>
